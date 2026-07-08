@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tallygaon — Poker Night Settlement</title>
+
+<meta property="og:title" content="Tallygaon">
+<meta property="og:description" content="Buy-ins, side loans, and end-of-night settlement for your poker table — all tallied in one tap.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sarathmagic-sketch.github.io/TallygaonPoker/">
+<meta property="og:image" content="https://sarathmagic-sketch.github.io/TallygaonPoker/tallygaon-og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tallygaon">
+<meta name="twitter:description" content="Buy-ins, side loans, and end-of-night settlement for your poker table.">
+<meta name="twitter:image" content="https://sarathmagic-sketch.github.io/TallygaonPoker/tallygaon-og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Roboto+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --felt-0:#050505;
+    --felt-1:#141414;
+    --felt-2:#1e1e1e;
+    --gold:#c81d35;
+    --gold-dim:#7a1424;
+    --cream:#f2ede3;
+    --cream-dim:#948c81;
+    --red:#ff4d5e;
+    --green-win:#f2ede3;
+    --line: rgba(242,237,227,0.16);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 50% 0%, #1a0508 0%, var(--felt-0) 70%);
+    color:var(--cream);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 16px;}
+
+  header.top{
+    padding:28px 16px 18px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(0,0,0,0.15), transparent);
+  }
+  header.top h1{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    letter-spacing:0.06em;
+    font-size:28px;
+    margin:0;
+    color:var(--gold);
+    text-transform:uppercase;
+  }
+  header.top .suits{
+    letter-spacing:0.3em;
+    color:var(--cream-dim);
+    font-size:13px;
+    margin-top:4px;
+  }
+  header.top .suits .suit-r{color:var(--red);}
+  header.top .suits .suit-w{color:var(--cream);}
+  header.top .sub{
+    font-size:12.5px;
+    color:var(--cream-dim);
+    margin-top:6px;
+  }
+  header.top .session-bar{
+    margin-top:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+    font-size:12.5px;
+    color:var(--cream-dim);
+  }
+  header.top .session-bar .code-pill{
+    font-family:'Roboto Mono',monospace;
+    background:var(--felt-1);
+    border:1px solid var(--line);
+    padding:4px 10px;
+    border-radius:999px;
+    color:var(--gold);
+    font-weight:700;
+    letter-spacing:0.08em;
+  }
+  header.top .session-bar button.linklike{
+    background:none; border:none; color:var(--cream-dim);
+    text-decoration:underline; font-size:12px; cursor:pointer; padding:0;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:8px;
+    padding:16px 16px 0;
+    max-width:640px;
+    margin:0 auto;
+  }
+  nav.tabs button{
+    flex:1;
+    padding:11px 6px;
+    border-radius:999px;
+    border:1px solid rgba(242,237,227,0.2);
+    background:var(--felt-1);
+    color:var(--cream-dim);
+    font-family:'Oswald',sans-serif;
+    letter-spacing:0.04em;
+    font-size:13.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:all .15s ease;
+    position:relative;
+  }
+  nav.tabs button .chip-dot{
+    display:inline-block;width:8px;height:8px;border-radius:50%;
+    background:var(--gold-dim); margin-right:6px; vertical-align:middle;
+  }
+  nav.tabs button.active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--cream);
+    font-weight:600;
+  }
+  nav.tabs button.active .chip-dot{background:var(--cream);}
+
+  main{padding:20px 16px 0;}
+  .card{
+    background:var(--felt-1);
+    border:1px solid var(--line);
+    border-top:2px solid rgba(242,237,227,0.35);
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:16px;
+  }
+  .card h2{
+    font-family:'Oswald',sans-serif;
+    font-size:15px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0 0 4px;
+  }
+  .card p.hint{
+    font-size:12.5px;
+    color:var(--cream-dim);
+    margin:0 0 14px;
+  }
+
+  .row{display:flex; gap:8px; margin-bottom:10px;}
+  .row > *{flex:1;}
+  input, select{
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--felt-0);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+  }
+  input::placeholder{color:var(--cream-dim);}
+  input:focus, select:focus{outline:2px solid var(--gold); outline-offset:1px;}
+
+  button.action, a.action{
+    padding:10px 16px;
+    border-radius:8px;
+    border:none;
+    background:var(--gold);
+    color:var(--cream);
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  button.action:active{transform:scale(0.98);}
+  button.action:disabled{opacity:0.5; cursor:not-allowed;}
+  button.ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--cream-dim);
+    padding:6px 10px;
+    border-radius:7px;
+    font-size:12.5px;
+    cursor:pointer;
+  }
+  button.ghost:hover{border-color:var(--red); color:var(--red);}
+
+  button.google-btn{
+    width:100%;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    padding:13px 16px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--cream);
+    color:#1a1a1a;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+  }
+  button.google-btn .g-icon{
+    width:20px; height:20px; border-radius:50%;
+    background:var(--gold);
+    color:var(--cream);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-family:'Oswald',sans-serif; font-weight:700; font-size:13px;
+  }
+
+  .player-item{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .player-item:last-child{border-bottom:none;}
+  .player-item .top-row{display:flex; align-items:center; justify-content:space-between;}
+  .player-item .name{font-weight:600; font-size:15px;}
+  .player-item .name .you-badge{
+    font-size:10px; text-transform:uppercase; letter-spacing:0.04em;
+    background:var(--gold-dim); color:var(--cream); padding:2px 6px;
+    border-radius:999px; margin-left:6px; vertical-align:middle;
+  }
+  .player-item .meta{
+    font-family:'Roboto Mono',monospace;
+    font-size:13px;
+    color:var(--cream-dim);
+  }
+  .player-item .actions{display:flex; gap:6px; align-items:center;}
+  .rebuy-input{width:70px !important; padding:6px 8px !important; font-size:13px !important;}
+  .pay-info-row{display:flex; gap:8px;}
+  .pay-info-row input{font-size:12.5px !important; padding:7px 9px !important;}
+
+  .history-item{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 0; border-bottom:1px solid var(--line);
+  }
+  .history-item:last-child{border-bottom:none;}
+
+  .transfer-item{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 0; border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+  .transfer-item:last-child{border-bottom:none;}
+  .transfer-item .amt{font-family:'Roboto Mono',monospace; color:var(--gold);}
+  .transfer-item .ts{
+    font-family:'Roboto Mono',monospace; font-size:11px; color:var(--cream-dim);
+    margin-left:8px;
+  }
+
+  .empty{
+    text-align:center;
+    padding:22px 10px;
+    color:var(--cream-dim);
+    font-size:13.5px;
+    border:1px dashed var(--line);
+    border-radius:10px;
+  }
+
+  table.settle{width:100%; border-collapse:collapse; font-size:13px;}
+  table.settle th, table.settle td{
+    padding:8px 6px; text-align:right; border-bottom:1px solid var(--line);
+    font-family:'Roboto Mono',monospace;
+  }
+  table.settle th:first-child, table.settle td:first-child{text-align:left; font-family:'Inter',sans-serif;}
+  table.settle th{color:var(--cream-dim); font-weight:500; font-size:11px; text-transform:uppercase; letter-spacing:0.04em;}
+  .pos{color:var(--green-win);}
+  .neg{color:var(--red);}
+
+  .balance-check{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 14px; border-radius:10px; margin-top:12px; font-size:13.5px;
+  }
+  .balance-check.ok{background:rgba(242,237,227,0.08); border:1px solid rgba(242,237,227,0.3); color:var(--cream);}
+  .balance-check.bad{background:rgba(255,77,94,0.12); border:1px solid rgba(255,77,94,0.4); color:var(--red);}
+
+  .chit{
+    background:var(--felt-0);
+    border:1px dashed rgba(242,237,227,0.4);
+    border-radius:10px;
+    padding:16px;
+    margin-bottom:10px;
+    font-family:'Roboto Mono',monospace;
+    font-size:14.5px;
+  }
+  .chit .who-row{display:flex; justify-content:space-between; align-items:center;}
+  .chit .who{font-family:'Inter',sans-serif; font-size:14px;}
+  .chit .who b{color:var(--gold);}
+  .chit .amt{color:var(--gold); font-weight:700; font-size:16px;}
+  .chit .pay-to{
+    margin-top:8px; padding-top:8px; border-top:1px solid var(--line);
+    font-family:'Inter',sans-serif; font-size:12.5px; color:var(--cream-dim);
+  }
+  .chit .pay-to b{color:var(--cream);}
+  .chit a.action{
+    display:block; text-align:center; text-decoration:none;
+    margin-top:10px; font-family:'Inter',sans-serif;
+  }
+
+  .winner-card{
+    text-align:center;
+    border-top-color: var(--gold) !important;
+  }
+  .winner-card .trophy{font-size:40px; line-height:1;}
+  .winner-card h2{font-size:20px !important; color:var(--cream) !important; margin:8px 0 2px !important;}
+  .winner-card .amount{color:var(--gold); font-family:'Roboto Mono',monospace; font-size:22px; font-weight:700;}
+
+  footer.note{
+    text-align:center; font-size:11.5px; color:var(--cream-dim);
+    padding:20px 16px 0;
+  }
+  .section-label{
+    font-size:11px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--cream-dim); margin:18px 0 8px;
+  }
+  .or-divider{
+    text-align:center; color:var(--cream-dim); font-size:12px;
+    margin:18px 0; text-transform:uppercase; letter-spacing:0.08em;
+    position:relative;
+  }
+  .or-divider::before, .or-divider::after{
+    content:''; position:absolute; top:50%; width:40%; height:1px;
+    background:var(--line);
+  }
+  .or-divider::before{left:0;} .or-divider::after{right:0;}
+  .config-warning{
+    background:rgba(255,77,94,0.12); border:1px solid rgba(255,77,94,0.4);
+    color:var(--red); padding:14px; border-radius:10px; font-size:13px;
+    margin-bottom:16px; line-height:1.5;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Tallygaon</h1>
+  <div class="suits"><span class="suit-w">&#9824;</span> &nbsp; <span class="suit-r">&#9829;</span> &nbsp; <span class="suit-r">&#9830;</span> &nbsp; <span class="suit-w">&#9827;</span></div>
+  <div class="sub">Home game buy-ins, side loans &amp; end-of-night settlement</div>
+  <div class="session-bar" id="sessionBar" style="display:none"></div>
+</header>
+
+<!-- SCREEN: SIGN IN -->
+<div class="wrap screen" id="screen-auth" style="display:none">
+  <div class="card" style="margin-top:20px;">
+    <h2>Sign in</h2>
+    <p class="hint">Sign in with Google so your buy-ins and payment details sync live with everyone else at the table.</p>
+    <div id="configWarning"></div>
+    <button class="google-btn" onclick="handleSignIn()"><span class="g-icon">G</span> Continue with Google</button>
+  </div>
+</div>
+
+<!-- SCREEN: GAME CODE -->
+<div class="wrap screen" id="screen-gamecode" style="display:none">
+  <div class="card" style="margin-top:20px;">
+    <h2>Start a new game</h2>
+    <p class="hint">Creates a fresh game code — share it with everyone at the table so they can join from their own phone.</p>
+    <button class="action" style="width:100%" onclick="handleCreateGame()">+ Start new game</button>
+  </div>
+  <div class="or-divider">or</div>
+  <div class="card">
+    <h2>Join a game</h2>
+    <p class="hint">Enter the code someone already shared with you.</p>
+    <div class="row">
+      <input id="joinCodeInput" placeholder="Game code (e.g. 7F2KQ)" style="text-transform:uppercase">
+    </div>
+    <button class="action" style="width:100%" onclick="handleJoinGame()">Join game</button>
+  </div>
+  <div class="card">
+    <h2>Previous games</h2>
+    <p class="hint">Games you've played, saved to your account.</p>
+    <div id="previousGamesList"></div>
+  </div>
+</div>
+
+<!-- SCREEN: SELF-JOIN PROFILE -->
+<div class="wrap screen" id="screen-join" style="display:none">
+  <div class="card" style="margin-top:20px;">
+    <h2>Join this table</h2>
+    <p class="hint">Confirm your name and buy-in. Your UPI/mobile are remembered from last time — edit if anything's changed.</p>
+    <div class="row">
+      <input id="joinName" placeholder="Your name">
+    </div>
+    <div class="row">
+      <input id="joinBuyin" type="number" inputmode="decimal" placeholder="Your buy-in (e.g. ₹1000)">
+    </div>
+    <div class="row">
+      <input id="joinUpi" placeholder="UPI ID (e.g. name@upi)">
+    </div>
+    <div class="row">
+      <input id="joinMobile" type="tel" placeholder="Mobile number">
+    </div>
+    <button class="action" style="width:100%" onclick="handleSelfJoin()">Join the table</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-shell" style="display:none">
+
+<nav class="tabs">
+  <button data-tab="setup" class="active"><span class="chip-dot"></span>Buy-ins</button>
+  <button data-tab="live"><span class="chip-dot"></span>Transfers</button>
+  <button data-tab="settle"><span class="chip-dot"></span>Settle Up</button>
+</nav>
+
+<main class="wrap">
+
+  <!-- SETUP TAB -->
+  <section id="tab-setup">
+    <div class="card">
+      <h2>Invite players</h2>
+      <p class="hint">Share this game's link. Add a time/place and it's included in the message.</p>
+      <div class="row">
+        <input id="invPlace" placeholder="Place (optional)">
+        <input id="invTime" placeholder="Time (optional, e.g. 8:30 PM)">
+      </div>
+      <button class="action" style="width:100%" onclick="copyInviteMessage()">Copy / share invite</button>
+    </div>
+
+    <div class="card">
+      <h2>My payment info</h2>
+      <p class="hint">This is what other players will see when they owe you money. Saved to your account for future games too.</p>
+      <div class="pay-info-row">
+        <input id="myUpi" placeholder="UPI ID">
+        <input id="myMobile" type="tel" placeholder="Mobile number">
+      </div>
+      <button class="action" style="width:100%; margin-top:10px;" onclick="saveMyPaymentInfo()">Save my info</button>
+    </div>
+
+    <div class="card">
+      <h2>Add a guest player</h2>
+      <p class="hint">For anyone playing who isn't signing in themselves — you can add them manually with a buy-in.</p>
+      <div class="row">
+        <input id="newName" placeholder="Player name">
+        <input id="newBuyin" type="number" inputmode="decimal" placeholder="Buy-in (e.g. ₹1000)">
+      </div>
+      <button class="action" style="width:100%" onclick="addPlayer()">+ Add player</button>
+    </div>
+
+    <div class="card">
+      <h2>Players &amp; total buy-in</h2>
+      <p class="hint">Tap "+ rebuy" any time a player buys back in. UPI/mobile fields save automatically.</p>
+      <div id="playerList"></div>
+    </div>
+  </section>
+
+  <!-- LIVE TAB -->
+  <section id="tab-live" style="display:none">
+    <div class="card">
+      <h2>Record a side transfer</h2>
+      <p class="hint">If one player hands cash directly to another mid-game (spotting them a rebuy, a loan), log it here. It's treated as a loan — the giver gets it back and the receiver owes it — and folded straight into the final settlement.</p>
+      <div class="row">
+        <select id="tFrom"></select>
+        <select id="tTo"></select>
+      </div>
+      <div class="row">
+        <input id="tAmt" type="number" inputmode="decimal" placeholder="Amount">
+        <input id="tNote" placeholder="Note (optional)">
+      </div>
+      <button class="action" style="width:100%" onclick="addTransfer()">+ Add transfer</button>
+    </div>
+
+    <div class="card">
+      <h2>Transfer log</h2>
+      <div id="transferList"></div>
+    </div>
+  </section>
+
+  <!-- SETTLE TAB -->
+  <section id="tab-settle" style="display:none">
+    <div class="card">
+      <h2>Final chip counts</h2>
+      <p class="hint">When the game ends, count down every stack and enter the cash value here.</p>
+      <div id="finalInputs"></div>
+      <button class="action" style="width:100%; margin-top:6px;" onclick="renderSettlement()">Calculate settlement</button>
+    </div>
+
+    <div id="settlementOutput"></div>
+  </section>
+
+</main>
+
+</div><!-- /app-shell -->
+
+<footer class="note">Buy-ins in, chips out, transfers netted — the felt always balances to zero.</footer>
+
+<!-- Hidden Spotify player for the winner celebration song -->
+<div id="spotify-embed" style="position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none;"></div>
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+
+<script type="module">
+// ============================================================
+// FIREBASE SETUP
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyBxCHd9Rc3NMiW6C6Xa2GKavlBvMNPzXK4",
+  authDomain: "tallygaon-496b2.firebaseapp.com",
+  projectId: "tallygaon-496b2",
+  storageBucket: "tallygaon-496b2.firebasestorage.app",
+  messagingSenderId: "864273593843",
+  appId: "1:864273593843:web:b01fc6ace0772c89dd4e86"
+};
+const FIREBASE_NOT_CONFIGURED = (firebaseConfig.apiKey === "PASTE_YOUR_API_KEY");
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+  getRedirectResult, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+let app, auth, db, provider;
+if(!FIREBASE_NOT_CONFIGURED){
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  provider = new GoogleAuthProvider();
+}
+
+let currentUser = null;
+let userProfile = null;
+let gameCode = null;
+let unsubscribeGame = null;
+
+let spotifyController = null;
+let spotifyReady = false;
+const WINNER_SONG_SPOTIFY_URI = 'spotify:track:5lnsCyEKWofnC00U4Ax0ti'; // Rihanna - Bitch Better Have My Money
+
+console.log('[Tallygaon] Waiting for Spotify IFrame API...');
+
+window.onSpotifyIframeApiReady = (IFrameAPI) => {
+  console.log('[Tallygaon] Spotify IFrame API ready, creating embed controller...');
+  const element = document.getElementById('spotify-embed');
+  const options = { uri: WINNER_SONG_SPOTIFY_URI, width: '1', height: '1' };
+  IFrameAPI.createController(element, options, (EmbedController) => {
+    spotifyController = EmbedController;
+    spotifyReady = true;
+    console.log('[Tallygaon] Spotify controller ready.');
+    EmbedController.addListener('playback_update', e => {
+      console.log('[Tallygaon] Spotify playback update:', e.data);
+    });
+  });
+};
+
+setTimeout(()=>{
+  if(!spotifyReady){
+    console.warn('[Tallygaon] Spotify controller still not ready 5s after page load — the embed script may be blocked (ad-blocker / extension / network).');
+  }
+}, 5000);
+
+function playWinnerSong(){
+  console.log('[Tallygaon] playWinnerSong called. spotifyReady:', spotifyReady);
+  if(!spotifyReady || !spotifyController){
+    console.warn('[Tallygaon] Spotify player not ready yet — cannot play song this time.');
+    return;
+  }
+  try{
+    spotifyController.play();
+    setTimeout(()=>{ try{ spotifyController.seek(3); }catch(e){} }, 250);
+    setTimeout(()=>{ try{ spotifyController.pause(); }catch(e){} }, 30000);
+  }catch(e){ console.warn('[Tallygaon] Winner song playback threw an error:', e.message); }
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const pendingGameCode = (urlParams.get('game') || '').toUpperCase() || null;
+
+let state = {
+  players: {},
+  transfers: [],
+  finals: {}
+};
+
+function fmt(n){
+  const sign = n < 0 ? '-' : '';
+  return sign + '₹' + Math.abs(n).toFixed(2).replace(/\.00$/,'');
+}
+function totalBuyin(p){ return (p.buyins||[]).reduce((a,b)=>a+b,0); }
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function genId(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+function genGameCode(){
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for(let i=0;i<5;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+function todayLabel(){
+  return new Date().toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+}
+function timeLabel(ts){
+  if(!ts) return '';
+  return new Date(ts).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+}
+
+// ---------- SCREEN MANAGEMENT ----------
+function showOnly(id){
+  ['screen-auth','screen-gamecode','screen-join'].forEach(s=>{
+    document.getElementById(s).style.display = (s===id) ? 'block' : 'none';
+  });
+  document.getElementById('app-shell').style.display = (id==='app-shell') ? 'block' : 'none';
+}
+
+function renderSessionBar(){
+  const bar = document.getElementById('sessionBar');
+  if(!currentUser || !gameCode){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  bar.innerHTML = `
+    <span>${escapeHtml(currentUser.displayName || currentUser.email)}</span>
+    <span class="code-pill">${escapeHtml(gameCode)}</span>
+    <button class="linklike" onclick="handleLeaveGame()">Leave game</button>
+    <button class="linklike" onclick="handleSignOut()">Sign out</button>
+  `;
+}
+
+// ---------- USER PROFILE (persists across games) ----------
+async function loadOrCreateUserProfile(){
+  const ref = doc(db,'users',currentUser.uid);
+  const snap = await getDoc(ref);
+  if(snap.exists()){
+    userProfile = snap.data();
+    userProfile.games = userProfile.games || [];
+  } else {
+    userProfile = { name: currentUser.displayName||'', upi:'', mobile:'', games:[] };
+    await setDoc(ref, userProfile);
+  }
+}
+async function saveUserProfile(){
+  if(!currentUser) return;
+  await setDoc(doc(db,'users',currentUser.uid), userProfile, {merge:true});
+}
+async function recordGameForProfile(code, createdAt){
+  if(!userProfile.games) userProfile.games = [];
+  let g = userProfile.games.find(g=>g.code===code);
+  if(!g){
+    g = { code, date: todayLabel(), startTime: timeLabel(createdAt), net:null, winner:null };
+    userProfile.games.unshift(g);
+    await saveUserProfile();
+  } else if(!g.startTime && createdAt){
+    g.startTime = timeLabel(createdAt);
+    await saveUserProfile();
+  }
+}
+async function recordGameResult(code, net, winnerNames){
+  const g = (userProfile.games||[]).find(g=>g.code===code);
+  if(g){
+    g.net = net;
+    g.winner = winnerNames || null;
+    g.settledAt = Date.now();
+    await saveUserProfile();
+  }
+}
+function renderPreviousGames(){
+  const el = document.getElementById('previousGamesList');
+  const games = (userProfile && userProfile.games) || [];
+  if(games.length===0){ el.innerHTML = '<div class="empty">No previous games yet.</div>'; return; }
+  el.innerHTML = games.map(g=>`
+    <div class="history-item">
+      <div>
+        <div class="name" style="font-weight:600;">${escapeHtml(g.code)}</div>
+        <div class="meta" style="font-family:'Roboto Mono',monospace; font-size:12.5px; color:var(--cream-dim);">
+          ${escapeHtml(g.date)}${g.startTime ? ' · ' + escapeHtml(g.startTime) : ''}${g.net!=null ? ' · Net: '+fmt(g.net) : ''}${g.winner ? '<br>WINNER: ' + escapeHtml(g.winner) : ''}
+        </div>
+      </div>
+      <button class="ghost" onclick="handleRejoinGame('${g.code}')">Open</button>
+    </div>
+  `).join('');
+}
+window.handleRejoinGame = async function(code){
+  const snap = await getDoc(doc(db,'games',code));
+  if(!snap.exists()){ alert('This game no longer exists.'); return; }
+  enterGame(code);
+};
+
+// ---------- AUTH ----------
+window.handleSignIn = async function(){
+  if(FIREBASE_NOT_CONFIGURED) return;
+  try{
+    await signInWithPopup(auth, provider);
+  }catch(e){
+    console.warn('Popup sign-in failed, trying redirect:', e.message);
+    try{ await signInWithRedirect(auth, provider); }
+    catch(e2){ alert('Sign-in failed: ' + e2.message); }
+  }
+};
+window.handleSignOut = async function(){
+  if(unsubscribeGame){ unsubscribeGame(); unsubscribeGame = null; }
+  gameCode = null;
+  await signOut(auth);
+};
+window.handleLeaveGame = function(){
+  if(unsubscribeGame){ unsubscribeGame(); unsubscribeGame = null; }
+  gameCode = null;
+  showOnly('screen-gamecode');
+  renderSessionBar();
+  renderPreviousGames();
+};
+
+if(!FIREBASE_NOT_CONFIGURED){
+  getRedirectResult(auth).catch(()=>{});
+  onAuthStateChanged(auth, async user=>{
+    currentUser = user;
+    if(!user){
+      showOnly('screen-auth');
+      renderSessionBar();
+      return;
+    }
+    await loadOrCreateUserProfile();
+    if(pendingGameCode){
+      const snap = await getDoc(doc(db,'games',pendingGameCode));
+      if(snap.exists()){ enterGame(pendingGameCode); return; }
+    }
+    showOnly('screen-gamecode');
+    renderSessionBar();
+    renderPreviousGames();
+  });
+} else {
+  document.addEventListener('DOMContentLoaded', ()=>{
+    showOnly('screen-auth');
+    document.getElementById('configWarning').innerHTML =
+      '<div class="config-warning">Firebase is not configured yet — paste your project\'s config into the script at the top of this file to enable Google sign-in and live sync.</div>';
+  });
+}
+
+// ---------- GAME CODE ----------
+window.handleCreateGame = async function(){
+  const code = genGameCode();
+  const initial = { players:{}, transfers:[], finals:{}, createdAt: Date.now(), date: todayLabel() };
+  await setDoc(doc(db,'games',code), initial);
+  enterGame(code);
+};
+window.handleJoinGame = async function(){
+  const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+  if(!code){ alert('Enter a game code.'); return; }
+  const snap = await getDoc(doc(db,'games',code));
+  if(!snap.exists()){ alert('No game found with that code. Double-check it with whoever shared it.'); return; }
+  enterGame(code);
+};
+function enterGame(code){
+  gameCode = code;
+  renderSessionBar();
+  if(unsubscribeGame) unsubscribeGame();
+  unsubscribeGame = onSnapshot(doc(db,'games',code), snap=>{
+    if(!snap.exists()) return;
+    state = snap.data();
+    state.players = state.players || {};
+    state.transfers = state.transfers || [];
+    state.finals = state.finals || {};
+    onStateUpdated();
+  });
+}
+async function writeState(){
+  if(!gameCode) return;
+  await setDoc(doc(db,'games',gameCode), state);
+}
+function onStateUpdated(){
+  if(currentUser){
+    recordGameForProfile(gameCode, state.createdAt);
+  }
+  if(currentUser && !state.players[currentUser.uid]){
+    document.getElementById('joinName').value = userProfile.name || currentUser.displayName || '';
+    document.getElementById('joinUpi').value = userProfile.upi || '';
+    document.getElementById('joinMobile').value = userProfile.mobile || '';
+    showOnly('screen-join');
+    return;
+  }
+  showOnly('app-shell');
+  renderAll();
+  const myTab = document.querySelector('nav.tabs button.active');
+  if(myTab && myTab.dataset.tab==='settle') renderFinalInputs();
+  if(myTab && myTab.dataset.tab==='live') renderTransferSelects();
+  const me = currentUser ? state.players[currentUser.uid] : null;
+  if(me){
+    document.getElementById('myUpi').value = me.upi || '';
+    document.getElementById('myMobile').value = me.mobile || '';
+  }
+}
+
+// ---------- SELF JOIN ----------
+window.handleSelfJoin = async function(){
+  const name = document.getElementById('joinName').value.trim();
+  const buyin = parseFloat(document.getElementById('joinBuyin').value);
+  const upi = document.getElementById('joinUpi').value.trim();
+  const mobile = document.getElementById('joinMobile').value.trim();
+  if(!name){ alert('Enter your name.'); return; }
+  if(isNaN(buyin) || buyin <= 0){ alert('Enter a valid buy-in amount.'); return; }
+  state.players[currentUser.uid] = {
+    name, email: currentUser.email || '', upi, mobile, buyins:[buyin]
+  };
+  await writeState();
+  userProfile.name = name; userProfile.upi = upi; userProfile.mobile = mobile;
+  await saveUserProfile();
+};
+
+window.saveMyPaymentInfo = async function(){
+  if(!currentUser || !state.players[currentUser.uid]){ alert('Join the table first.'); return; }
+  const upi = document.getElementById('myUpi').value.trim();
+  const mobile = document.getElementById('myMobile').value.trim();
+  state.players[currentUser.uid].upi = upi;
+  state.players[currentUser.uid].mobile = mobile;
+  await writeState();
+  userProfile.upi = upi; userProfile.mobile = mobile;
+  await saveUserProfile();
+  alert('Payment info saved — this will be remembered for future games too.');
+};
+
+// ---------- INVITE ----------
+window.copyInviteMessage = async function(){
+  const place = document.getElementById('invPlace').value.trim();
+  const time = document.getElementById('invTime').value.trim();
+  const link = window.location.origin + window.location.pathname + '?game=' + gameCode;
+  let msg = `Tallygaon Poker Night — ${todayLabel()}\nGame code: ${gameCode}`;
+  if(time) msg += `\nTime: ${time}`;
+  if(place) msg += `\nPlace: ${place}`;
+  msg += `\nJoin here: ${link}`;
+  try{
+    if(navigator.share){ await navigator.share({text: msg}); return; }
+  }catch(e){ /* user cancelled share, fall through to clipboard */ }
+  try{
+    await navigator.clipboard.writeText(msg);
+    alert('Invite message copied — paste it into WhatsApp.');
+  }catch(e){
+    prompt('Copy this message:', msg);
+  }
+};
+
+// ---------- TABS ----------
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    ['setup','live','settle'].forEach(t=>{
+      document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab) ? 'block' : 'none';
+    });
+    if(btn.dataset.tab === 'settle') renderFinalInputs();
+    if(btn.dataset.tab === 'live') renderTransferSelects();
+  });
+});
+
+// ---------- PLAYERS ----------
+window.addPlayer = async function(){
+  const nameEl = document.getElementById('newName');
+  const buyinEl = document.getElementById('newBuyin');
+  const name = nameEl.value.trim();
+  const buyin = parseFloat(buyinEl.value);
+  if(!name){ alert('Enter a player name.'); return; }
+  if(isNaN(buyin) || buyin <= 0){ alert('Enter a valid buy-in amount.'); return; }
+  state.players[genId('guest')] = { name, email:'', upi:'', mobile:'', buyins:[buyin] };
+  nameEl.value=''; buyinEl.value='';
+  await writeState();
+};
+window.addRebuy = async function(id){
+  const el = document.getElementById('rebuy-'+id);
+  const amt = parseFloat(el.value);
+  if(isNaN(amt) || amt <= 0) return;
+  state.players[id].buyins.push(amt);
+  el.value='';
+  await writeState();
+};
+window.removePlayer = async function(id){
+  if(!confirm('Remove this player and all their buy-ins/transfers?')) return;
+  delete state.players[id];
+  state.transfers = state.transfers.filter(t=>t.from!==id && t.to!==id);
+  delete state.finals[id];
+  await writeState();
+};
+window.updatePlayerPayInfo = async function(id, field, value){
+  if(!state.players[id]) return;
+  state.players[id][field] = value.trim();
+  await writeState();
+};
+function renderPlayerList(){
+  const el = document.getElementById('playerList');
+  const ids = Object.keys(state.players);
+  if(ids.length===0){
+    el.innerHTML = '<div class="empty">No players yet. Add a guest above, or share the game code so players can join themselves.</div>';
+    return;
+  }
+  el.innerHTML = ids.map(id=>{
+    const p = state.players[id];
+    const isYou = currentUser && id === currentUser.uid;
+    return `
+    <div class="player-item">
+      <div class="top-row">
+        <div>
+          <div class="name">${escapeHtml(p.name)}${isYou ? '<span class="you-badge">You</span>' : ''}</div>
+          <div class="meta">Buy-in: ${fmt(totalBuyin(p))} · ${p.buyins.length} entr${p.buyins.length===1?'y':'ies'}</div>
+        </div>
+        <div class="actions">
+          <input class="rebuy-input" id="rebuy-${id}" type="number" inputmode="decimal" placeholder="amt">
+          <button class="ghost" onclick="addRebuy('${id}')">+ rebuy</button>
+          <button class="ghost" onclick="removePlayer('${id}')">✕</button>
+        </div>
+      </div>
+      <div class="pay-info-row">
+        <input placeholder="UPI ID" value="${escapeHtml(p.upi||'')}" onchange="updatePlayerPayInfo('${id}','upi',this.value)">
+        <input placeholder="Mobile number" value="${escapeHtml(p.mobile||'')}" onchange="updatePlayerPayInfo('${id}','mobile',this.value)">
+      </div>
+    </div>
+  `}).join('');
+}
+
+// ---------- TRANSFERS ----------
+function renderTransferSelects(){
+  const ids = Object.keys(state.players);
+  const optsHtml = ids.map(id=>`<option value="${id}">${escapeHtml(state.players[id].name)}</option>`).join('');
+  const from = document.getElementById('tFrom');
+  const to = document.getElementById('tTo');
+  from.innerHTML = optsHtml || '<option value="">Add players first</option>';
+  to.innerHTML = optsHtml || '<option value="">Add players first</option>';
+}
+window.addTransfer = async function(){
+  const ids = Object.keys(state.players);
+  if(ids.length < 2){ alert('You need at least two players to record a transfer.'); return; }
+  const from = document.getElementById('tFrom').value;
+  const to = document.getElementById('tTo').value;
+  const amt = parseFloat(document.getElementById('tAmt').value);
+  const note = document.getElementById('tNote').value.trim();
+  if(from === to){ alert('Pick two different players.'); return; }
+  if(isNaN(amt) || amt <= 0){ alert('Enter a valid amount.'); return; }
+  state.transfers.push({ id: genId('t'), from, to, amount: amt, note, ts: Date.now() });
+  document.getElementById('tAmt').value='';
+  document.getElementById('tNote').value='';
+  await writeState();
+};
+window.removeTransfer = async function(id){
+  state.transfers = state.transfers.filter(t=>t.id!==id);
+  await writeState();
+};
+function nameOf(id){
+  const p = state.players[id];
+  return p ? p.name : '(removed)';
+}
+function renderTransferList(){
+  const el = document.getElementById('transferList');
+  if(state.transfers.length===0){
+    el.innerHTML = '<div class="empty">No side transfers logged yet.</div>';
+    return;
+  }
+  el.innerHTML = state.transfers.map(t=>`
+    <div class="transfer-item">
+      <div>${escapeHtml(nameOf(t.from))} → ${escapeHtml(nameOf(t.to))}${t.note ? ' <span style="color:var(--cream-dim)">('+escapeHtml(t.note)+')</span>' : ''}<span class="ts">${timeLabel(t.ts)}</span></div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="amt">${fmt(t.amount)}</span>
+        <button class="ghost" onclick="removeTransfer('${t.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---------- SETTLE ----------
+function renderFinalInputs(){
+  const el = document.getElementById('finalInputs');
+  const ids = Object.keys(state.players);
+  if(ids.length===0){
+    el.innerHTML = '<div class="empty">Add players on the Buy-ins tab first.</div>';
+    return;
+  }
+  el.innerHTML = ids.map(id=>{
+    const p = state.players[id];
+    return `
+    <div class="row" style="align-items:center;">
+      <div style="flex:1.2; font-size:14.5px;">${escapeHtml(p.name)}</div>
+      <input style="flex:1" type="number" inputmode="decimal" id="final-${id}"
+        value="${state.finals[id] !== undefined ? state.finals[id] : ''}"
+        placeholder="Final chips">
+    </div>
+  `}).join('');
+}
+
+function settleDebts(nets){
+  const creditors = nets.filter(n=>n.amount > 0.005).map(n=>({...n})).sort((a,b)=>b.amount-a.amount);
+  const debtors   = nets.filter(n=>n.amount < -0.005).map(n=>({...n, amount:-n.amount})).sort((a,b)=>b.amount-a.amount);
+  const txns = [];
+  let i=0, j=0;
+  while(i < debtors.length && j < creditors.length){
+    const d = debtors[i], c = creditors[j];
+    const amt = Math.min(d.amount, c.amount);
+    if(amt > 0.005){
+      txns.push({ fromId:d.id, toId:c.id, from: d.name, to: c.name, amount: amt });
+    }
+    d.amount -= amt;
+    c.amount -= amt;
+    if(d.amount <= 0.005) i++;
+    if(c.amount <= 0.005) j++;
+  }
+  return txns;
+}
+
+function buildUpiLink(payee, amount, note){
+  if(!payee || !payee.upi) return null;
+  const params = new URLSearchParams({
+    pa: payee.upi,
+    pn: payee.name || 'Tallygaon',
+    am: amount.toFixed(2),
+    cu: 'INR',
+    tn: note || 'Tallygaon settlement'
+  });
+  return 'upi://pay?' + params.toString();
+}
+
+function launchConfetti(){
+  const canvas = document.createElement('canvas');
+  canvas.style.position='fixed'; canvas.style.top='0'; canvas.style.left='0';
+  canvas.style.width='100%'; canvas.style.height='100%'; canvas.style.pointerEvents='none'; canvas.style.zIndex='9999';
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  const colors = ['#c81d35','#ff4d5e','#f2ede3','#ffffff','#7a1424'];
+  const pieces = Array.from({length:130}, ()=>({
+    x: Math.random()*canvas.width,
+    y: -20 - Math.random()*canvas.height*0.4,
+    w: 6+Math.random()*6,
+    h: 10+Math.random()*7,
+    color: colors[Math.floor(Math.random()*colors.length)],
+    speedY: 2.5+Math.random()*3.5,
+    speedX: -1.8+Math.random()*3.6,
+    rot: Math.random()*360,
+    rotSpeed: -9+Math.random()*18
+  }));
+  let frame=0;
+  const maxFrames = 210;
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.x += p.speedX; p.y += p.speedY; p.rot += p.rotSpeed;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    frame++;
+    if(frame < maxFrames){ requestAnimationFrame(tick); }
+    else{ canvas.remove(); }
+  }
+  tick();
+}
+
+window.renderSettlement = function(){
+  const ids = Object.keys(state.players);
+  if(ids.length===0) return;
+  let missing = false;
+  ids.forEach(id=>{
+    const inputEl = document.getElementById('final-'+id);
+    if(!inputEl) return;
+    const v = inputEl.value;
+    if(v === '' || v === null){ missing = true; return; }
+    state.finals[id] = parseFloat(v) || 0;
+  });
+  writeState();
+
+  const rows = ids.map(id=>{
+    const p = state.players[id];
+    const buyin = totalBuyin(p);
+    const final = state.finals[id] !== undefined ? state.finals[id] : 0;
+    const given = state.transfers.filter(t=>t.from===id).reduce((a,t)=>a+t.amount,0);
+    const received = state.transfers.filter(t=>t.to===id).reduce((a,t)=>a+t.amount,0);
+    const net = (final - buyin) + given - received;
+    return { id, name:p.name, upi:p.upi, mobile:p.mobile, buyin, final, given, received, net };
+  });
+
+  const totalBuyinAll = rows.reduce((a,r)=>a+r.buyin,0);
+  const totalFinalAll = rows.reduce((a,r)=>a+r.final,0);
+  const diff = totalFinalAll - totalBuyinAll;
+  const isBalanced = Math.abs(diff) < 0.01;
+
+  const txns = settleDebts(rows.map(r=>({id:r.id, name:r.name, amount:r.net})));
+
+  const maxNet = Math.max(...rows.map(r=>r.net));
+  const winners = rows.filter(r=>Math.abs(r.net-maxNet)<0.005 && maxNet > 0.005);
+  const winnerNames = winners.map(w=>w.name).join(' & ');
+
+  if(currentUser && rows.find(r=>r.id===currentUser.uid)){
+    const myNet = rows.find(r=>r.id===currentUser.uid).net;
+    recordGameResult(gameCode, myNet, winnerNames);
+  }
+
+  let winnerHtml = '';
+  if(winners.length){
+    winnerHtml = `
+      <div class="card winner-card">
+        <div class="trophy">🏆</div>
+        <h2>${winners.map(w=>escapeHtml(w.name)).join(' &amp; ')} take${winners.length===1?'s':''} home the most</h2>
+        <div class="amount">${fmt(maxNet)}</div>
+      </div>
+    `;
+    launchConfetti(); playWinnerSong();
+  }
+
+  const tableHtml = `
+    <div class="card">
+      <h2>Tally</h2>
+      <table class="settle">
+        <thead><tr><th>Player</th><th>Buy-in</th><th>Cash out</th><th>Transfers</th><th>Net</th></tr></thead>
+        <tbody>
+          ${rows.map(r=>`
+            <tr>
+              <td>${escapeHtml(r.name)}</td>
+              <td>${fmt(r.buyin)}</td>
+              <td>${fmt(r.final)}</td>
+              <td>${r.given||r.received ? (r.given?('-'+fmt(r.given)+' '):'') + (r.received?('+'+fmt(r.received)):'') : '—'}</td>
+              <td class="${r.net>=0?'pos':'neg'}">${r.net>=0?'+':''}${fmt(r.net)}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="balance-check ${isBalanced ? 'ok' : 'bad'}">
+        <span>${isBalanced ? '✓ Board balances' : '⚠ Board off by ' + fmt(Math.abs(diff))}</span>
+        <span>In: ${fmt(totalBuyinAll)} · Out: ${fmt(totalFinalAll)}</span>
+      </div>
+      ${!isBalanced ? '<p class="hint" style="margin-top:8px;">Total cash-out does not match total buy-in. Double-check chip counts — someone\'s stack was probably mis-entered.</p>' : ''}
+    </div>
+  `;
+
+  const settleHtml = `
+    <div class="card">
+      <h2>Who pays who</h2>
+      <p class="hint">Minimum number of payments to settle the table result and any outstanding loans together.</p>
+      ${txns.length===0
+        ? '<div class="empty">Nobody owes anybody — dead even.</div>'
+        : txns.map(t=>{
+            const payee = state.players[t.toId];
+            const upiLink = buildUpiLink(payee, t.amount, 'Tallygaon settlement');
+            const payInfo = payee && (payee.upi || payee.mobile)
+              ? `<div class="pay-to">Send to <b>${escapeHtml(payee.upi || payee.mobile)}</b>${payee.upi && payee.mobile ? ' · '+escapeHtml(payee.mobile) : ''}</div>`
+              : `<div class="pay-to" style="color:var(--red)">No payment info on file for ${escapeHtml(t.to)} yet.</div>`;
+            const payBtn = upiLink ? `<a class="action" href="${upiLink}">Pay via UPI (Google Pay etc.)</a>` : '';
+            return `
+          <div class="chit">
+            <div class="who-row">
+              <div class="who">${escapeHtml(t.from)} <span style="color:var(--cream-dim)">pays</span> <b>${escapeHtml(t.to)}</b></div>
+              <div class="amt">${fmt(t.amount)}</div>
+            </div>
+            ${payInfo}
+            ${payBtn}
+          </div>
+        `}).join('')}
+    </div>
+  `;
+
+  document.getElementById('settlementOutput').innerHTML = winnerHtml + tableHtml + settleHtml;
+
+  if(missing){
+    document.getElementById('settlementOutput').insertAdjacentHTML('afterbegin',
+      '<div class="card"><p class="hint" style="color:var(--red); margin:0;">Some players are missing a final chip count — treated as ₹0 until entered.</p></div>');
+  }
+};
+
+function renderAll(){
+  renderPlayerList();
+  renderTransferSelects();
+  renderTransferList();
+}
+</script>
+
+</body>
+</html>
